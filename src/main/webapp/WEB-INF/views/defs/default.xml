@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 3.0//EN"
+       "http://tiles.apache.org/dtds/tiles-config_3_0.dtd">
+<tiles-definitions>
+
+<definition name="rootBlog1.9">
+
+	<put-attribute name="title" value="Blog" cascade="true"/>
+	<put-attribute name="topbar" value="/WEB-INF/views/layout1.9/root/topbar.jsp" />
+	<put-attribute name="navbar" value="/WEB-INF/views/layout1.9/root/navbar.jsp" />
+	<put-attribute name="footer" value="/WEB-INF/views/layout1.9/root/footer.jsp" />
+	<put-attribute name="headTag" value="/WEB-INF/views/layout1.9/root/fileHead.jsp" />
+	<put-attribute name="profileLeftbar" value="/WEB-INF/views/layout1.9/profile/leftbar.jsp" cascade="true"/>
+	<put-attribute name="bodyjs" value="/WEB-INF/views/layout1.9/root/globaljs.jsp" cascade="true"/>
+	<put-attribute name="breadcrumb" value="/WEB-INF/views/layout1.9/root/breadcrumb.jsp" cascade="true" />
+	
+</definition>
+
+<definition name="commonBlog1.9" extends="rootBlog1.9" template="/WEB-INF/views/layout1.9/blog/default.jsp">
+   <put-attribute name="title" value="Authentication Server" cascade="true"/>
+   <put-attribute name="pagination" value="/WEB-INF/views/layout1.9/root/pagination.jsp" cascade="true"/>
+</definition>
+
+<definition name="commonBlog1.9" extends="rootBlog1.9" template="/WEB-INF/views/layout1.9/blog/default.jsp">
+   <put-attribute name="title" value="Authentication Server" cascade="true"/>
+   <put-attribute name="paginationAjax" value="/WEB-INF/views/layout1.9/root/paginationAjax.jsp" cascade="true"/>
+</definition>
+
+<!-- Login and Register -->
+
+<definition name="loginLayout" template="/WEB-INF/views/layout/login.jsp">
+  <put-attribute name="title" value="Sign In" />
+</definition>
+
+<definition name="userLogin" extends="loginLayout">
+  <put-attribute name="title" value="Sign In" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/users/login.jsp" />
+</definition>
+
+
+<definition name="userSearchResults" extends="commonBlog1.9">
+  <put-attribute name="title" value="Search Results" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/users/searchResults.jsp" />
+</definition>
+
+<!-- Pages -->
+
+<definition name="home" extends="commonBlog1.9">
+  <put-attribute name="title" value="Home - Auth Server" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/home/home.jsp" />
+</definition>
+
+
+<!-- Errors -->
+
+<definition name="errorout" template="/WEB-INF/views/layout/errorout.jsp">
+    <put-attribute name="title" value="Error" />
+</definition>
+
+
+<definition name="pageDenied" extends="errorout">
+    <put-attribute name="title" value="Access Denied to this Page" />
+    <put-attribute name="body" value="/WEB-INF/views/jsp/users/accessdenied.jsp" />
+</definition>
+
+<!-- Admin -->
+
+<definition name="adminDashboard" extends="commonBlog1.9">
+  <put-attribute name="title" value="Admin - Dashboard" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/admin/dashboard.jsp"/>
+</definition>
+
+<definition name="adminUpdatePassword" extends="commonBlog1.9">
+  <put-attribute name="title" value="Password Update" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/users/adminUpdatePassword.jsp" cascade="true"/>
+</definition>
+
+
+<!-- Users -->
+
+<definition name="userAdd" extends="commonBlog1.9">
+  <put-attribute name="title" value="Add new User" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/users/add.jsp" />
+</definition>
+
+<definition name="userProfile" extends="commonBlog1.9">
+  <put-attribute name="title" value="Edit Profile" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/users/profile.jsp" />
+</definition>
+
+
+<definition name="userPasswordUpdate" extends="commonBlog1.9">
+  <put-attribute name="title" value="Password Update" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/users/updatePassword.jsp" cascade="true"/>
+</definition>
+
+
+<!-- Roles -->
+
+
+<definition name="roleAdd" extends="commonBlog1.9">
+  <put-attribute name="title" value="Add new User" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/roles/add.jsp" />
+</definition>
+
+  
+</tiles-definitions>
