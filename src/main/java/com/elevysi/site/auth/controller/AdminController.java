@@ -19,10 +19,11 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.List;
 import java.util.Set;
 
+import com.elevysi.site.auth.entity.OauthClientDetail;
 import com.elevysi.site.auth.entity.Role;
-import com.elevysi.site.auth.entity.Role_;
 import com.elevysi.site.auth.entity.User;
 import com.elevysi.site.auth.entity.User_;
+import com.elevysi.site.auth.service.OauthClientDetailService;
 import com.elevysi.site.auth.service.RoleService;
 import com.elevysi.site.auth.service.UserService;
 import com.elevysi.site.commons.pojo.OffsetPage;
@@ -36,11 +37,13 @@ public class AdminController extends AbstractController{
 
 	private UserService userService;
 	private RoleService roleService;
+	private OauthClientDetailService oauthClientDetailService;
 	
 	@Autowired
-	public AdminController(UserService userService, RoleService roleService) {
+	public AdminController(UserService userService, RoleService roleService, OauthClientDetailService oauthClientDetailService) {
 		this.userService = userService;
 		this.roleService = roleService;
+		this.oauthClientDetailService = oauthClientDetailService;
 	}
 	
 	@InitBinder
@@ -86,6 +89,9 @@ public class AdminController extends AbstractController{
 		
 		List<Role> roles = roleService.findAll();
 		model.addAttribute("roles", roles);
+		
+		List<OauthClientDetail> oauthClients = oauthClientDetailService.findAll();
+		model.addAttribute("oauthClients", oauthClients);
 		
 		return "adminDashboard";
 	}
@@ -143,7 +149,7 @@ public class AdminController extends AbstractController{
 		if(user != null) {
 			model.addAttribute("username", username);
 			model.addAttribute("user", user);
-			return "adminUpdatePassword";
+			return "adminUserUpdatePassword";
 		}
 		
 		SessionMessage sessionMessage = new SessionMessage("Could not find the specified user");
@@ -269,6 +275,117 @@ public class AdminController extends AbstractController{
 		model.addAttribute("role", role);
 		
 		return "roleAdd";
+	}
+	
+	
+	
+	//Oauth Clients
+	
+	@RequestMapping(value = {"/oauthClientDetail/add"}, method = RequestMethod.GET)
+	public String addOauthClient(Model model){
+		
+		OauthClientDetail oauthClientDetail = new OauthClientDetail();
+		model.addAttribute("oauthClientDetail", oauthClientDetail);
+		return "oauthClientDetailAdd";
+	}
+	
+	
+	@RequestMapping(value = {"/oauthClientDetail/add"}, method = RequestMethod.POST)
+	public String doAddOauthClient(
+			Model model,
+			@ModelAttribute("OauthClientDetail") OauthClientDetail oauthClientDetail, 
+			BindingResult result,
+			final RedirectAttributes redirectAttributes
+	){
+		
+		if(! result.hasErrors()){
+			
+			OauthClientDetail savedClient = oauthClientDetailService.saveClient(oauthClientDetail);
+			if(savedClient != null){
+				
+				SessionMessage sessionMessage = new SessionMessage("Successfully saved client!");
+				sessionMessage.setSuccessClass();
+				redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+				
+				return "redirect:/ui/admin/dashboard";
+			}
+		}
+		
+		SessionMessage sessionMessage = new SessionMessage("Please address the errors before saving.");
+		sessionMessage.setDangerClass();
+		
+		model.addAttribute("oauthClientDetail", oauthClientDetail);
+		
+		return "oauthClientDetailAdd";
+	}
+	
+	@RequestMapping(value="/oauthClientDetail/updateSecret/{id}", method=RequestMethod.GET)
+	public String updateSecretOauthClient(
+			Model model,
+			@PathVariable(value="id", required=true)Integer id,
+			final RedirectAttributes redirectAttributes
+	){
+		
+		//See if the user Exists
+		OauthClientDetail oauthClientDetail = oauthClientDetailService.findByID(id);
+		if(oauthClientDetail != null) {
+			model.addAttribute("clientID", oauthClientDetail.getClient_id());
+			model.addAttribute("oauthClientDetail", oauthClientDetail);
+			return "adminOauthClientSecretUpdate";
+		}
+		
+		SessionMessage sessionMessage = new SessionMessage("Could not find the specified user");
+		sessionMessage.setDangerClass();
+		
+		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+		return "redirect:/ui/admin/dashboard";
+		
+	}
+	
+	
+	@RequestMapping(value="/oauthClientDetail/updateSecret", method=RequestMethod.POST)
+	public String doUpdateSecretOauthClient(
+			Model model,
+			RedirectAttributes redirectAttributes,
+			@RequestParam("id")Integer id,
+			@RequestParam("newSecret")String newSecret,
+			@RequestParam("secretAgain")String secretAgain
+	){
+		
+		SessionMessage sessionMessage = new SessionMessage();
+		sessionMessage.setMsgText("Failed to update the password!");
+		sessionMessage.setDangerClass();
+		boolean successOperation = false;
+		
+		if(newSecret != null && !newSecret.isEmpty() && newSecret.length() >=5 ){
+			
+			if(newSecret.equals(secretAgain)){
+				OauthClientDetail savedOauthClientDetail = oauthClientDetailService.updateSecretAdmin(id, newSecret);
+				if(savedOauthClientDetail != null){						
+					successOperation = true;
+					sessionMessage.setMsgText("The secret was successfully updated!");
+					sessionMessage.setSuccessClass();
+				}else{
+					sessionMessage.setMsgText("Failed to update the secret.");
+					sessionMessage.setDangerClass();
+				}
+			}else{
+				sessionMessage.setMsgText("The secret confirmation does not match.");
+				sessionMessage.setDangerClass();
+			}
+			
+		}else{
+			sessionMessage.setMsgText("You must provide a new secret with at least 5 characters");
+			sessionMessage.setDangerClass();
+		}
+		
+		redirectAttributes.addFlashAttribute("sessionMessage", sessionMessage);
+		
+		if(successOperation){
+			return "redirect:/ui/admin/dashboard";
+		}else{
+			return "redirect:/ui/admin/oauthClientDetail/updateSecret/"+id;
+		}
 	}
 
 }

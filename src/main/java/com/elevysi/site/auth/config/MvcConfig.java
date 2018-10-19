@@ -40,6 +40,10 @@ public class MvcConfig extends WebMvcConfigurerAdapter{
 	public InternalResourceViewResolver defaultViewResolver() {
 		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
 		resolver.setPrefix("/WEB-INF/views/jsp/nullLayouts/");
+		
+//		resolver.setPrefix("classpath:views/jsp/nullLayouts/");
+//		 messageSource.setBasename("classpath:META-INF/messages/messages");
+		
 		resolver.setSuffix(".jsp");
 		resolver.setOrder(1);
 		return resolver;
@@ -49,6 +53,9 @@ public class MvcConfig extends WebMvcConfigurerAdapter{
     public TilesConfigurer tilesConfigurer(){
         TilesConfigurer tilesConfigurer = new TilesConfigurer();
         String[] defs = {"/WEB-INF/views/defs/default.xml"};
+        
+//        String[] defs = {"classpath:views/defs/default.xml"};
+        
         tilesConfigurer.setDefinitions(defs);
         return tilesConfigurer;
     }

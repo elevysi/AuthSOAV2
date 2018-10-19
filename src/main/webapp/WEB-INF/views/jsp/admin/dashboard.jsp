@@ -4,6 +4,7 @@
 <%@ include file="../../layout/taglib.jsp" %>
 <c:url var="deleteUserUrl" value="/ui/ajax/admin/user/modalDelete" />
 <c:url var="deleteRoleUrl" value="/ui/ajax/admin/role/modalDelete" />
+<c:url var="deleteOauthClientUrl" value="/ui/ajax/admin/oauthClientDetail/modalDelete" />
 
 <c:url var="searchUrl" value="/ui/admin/searchUser" />
 
@@ -99,7 +100,7 @@
 	</div>
 	
 	
-	<div class="panel panel-grey margin-bottom-40" id="">
+	<div class="panel panel-grey margin-bottom-40">
 		<div class="panel-heading">
 			<h3 class="panel-title"><i class="fa fa-user"></i>Users</h3>
 		</div>
@@ -165,6 +166,29 @@
 	<hr/>
 	<a href="<spring:url value='/ui/admin/role/add' />" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-plus"></i> New Role</a>
 	<hr/>
+	
+	
+	
+	<div class="panel panel-grey margin-bottom-40" id="">
+		<div class="panel-heading">
+			<h3 class="panel-title"><i class="fa fa-user"></i>Oauth Clients</h3>
+		</div>
+		<div class="panel-body">
+			<div id="pageContainerOauthClients">
+				<%@ include file="../nullLayouts/indexOauthClientAjax.jsp"%>
+			</div>
+			
+			
+			
+		</div>
+		
+	</div>
+	
+	<hr/>
+	<a href="<spring:url value='/ui/admin/oauthClientDetail/add' />" class="btn btn-sm btn-primary"><i class="glyphicon glyphicon-plus"></i> New Oauth Client</a>
+	<hr/>
+	
+	
 </div>
 
 <script type="text/javascript">
@@ -286,6 +310,58 @@ function deleteUser(userID){
 	        	       },
 	        	       complete : function (data){
 		        	    	   if(_deletedUser){
+		        	    	 	  	showModalUIMessage(_message, true);
+		        	    	 	}else{
+		        	    		 	 showModalUIMessage(_message, false);
+		        	    		}
+		        	    	   
+	        	       }
+	        		});
+		             
+	          },
+	          No: function () {
+	              $(this).dialog("close");
+	          }
+	      },
+	      close: function (event, ui) {
+	          $(this).remove();
+	      }
+	});
+		
+}
+
+
+function deleteClient(clientID){
+	
+	var _deletedClient = false;
+	var _message = "";
+	
+	$('<div></div>').appendTo('body')
+	  .html('<div><h6>Are you sure you want to delete this Client?</h6></div>')
+	  .dialog({
+	      modal: true, title: 'Please Confirm', zIndex: 10000, autoOpen: true,
+	      buttons: {
+	          Yes: function () {
+	        	  
+	        		$.ajax({
+	        			url : "${deleteOauthClientUrl}/"+clientID,
+	        			beforeSend:function(xhr){
+	       	             xhr.setRequestHeader(header, token);
+	       	        },
+	        			type : 'DELETE',
+	        			/* data : {"clientID" : clientID, "_csrf.parameterName" : "${_csrf.token}"}, */
+	        			dataType : "json",
+	        			success: function(returnData){
+	        				_message = returnData.message;
+	        				if(returnData.code == 1){
+	        					_deletedClient = true;
+	        				}
+	        			} ,
+	        			error: function (data){
+	        	    	   		alert("There was an error; the operation has failed.");
+	        	       },
+	        	       complete : function (data){
+		        	    	   if(_deletedClient){
 		        	    	 	  	showModalUIMessage(_message, true);
 		        	    	 	}else{
 		        	    		 	 showModalUIMessage(_message, false);

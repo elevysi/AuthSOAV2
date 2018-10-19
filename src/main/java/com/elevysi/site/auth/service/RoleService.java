@@ -36,8 +36,8 @@ public class RoleService extends AbstractServiceImpl<Role, Integer>{
 		return roleDAO.findAll();
 	}
 	
-	@PreAuthorize("hasRole('ADMIN')")
-	public List<Role> findPaginatedItems(Page page){
-		return roleDAO.findPaginatedItems(page);
-	}
+//	@PreAuthorize("hasRole('ADMIN')")
+//	public List<Role> findPaginatedItems(Page page){
+//		return roleDAO.findPaginatedItems(page);
+//	}
 }

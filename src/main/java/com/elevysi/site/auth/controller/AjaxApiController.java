@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.elevysi.site.auth.service.OauthClientDetailService;
 import com.elevysi.site.auth.service.UserService;
 import com.elevysi.site.commons.pojo.SessionMessage;
 
@@ -21,10 +22,12 @@ import com.elevysi.site.commons.pojo.SessionMessage;
 public class AjaxApiController extends AbstractController{
 	
 	private UserService userService;
+	private OauthClientDetailService oauthClientDetailService;
 	
 	@Autowired
-	public AjaxApiController(UserService userService) {
+	public AjaxApiController(UserService userService, OauthClientDetailService oauthClientDetailService) {
 		this.userService = userService;
+		this.oauthClientDetailService = oauthClientDetailService;
 	}
 	
 	@RequestMapping("/user/usernameAvailable")
@@ -44,6 +47,28 @@ public class AjaxApiController extends AbstractController{
 		
 		if(checkForNew){
 			available = userService.findByUsername(username) == null;
+		}
+		
+		return available.toString();
+	}
+	
+	@RequestMapping("/oauthClientDetail/clientIDAvailable")
+	@ResponseBody
+	public String oauthClientIDAvailable(
+			@RequestParam String client_id, 
+			@RequestParam(value="update", required = false)String oldClientID)
+	{
+		Boolean available = false;
+		boolean checkForNew = true;
+		if(oldClientID != null){
+			if(oldClientID.equalsIgnoreCase(client_id)){
+				available = true;
+				checkForNew = false;
+			} 
+		}
+		
+		if(checkForNew){
+			available = oauthClientDetailService.findByClientID(client_id) == null;
 		}
 		
 		return available.toString();

@@ -18,7 +18,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.elevysi.site.commons.dto.ProfileDTO;
+import com.elevysi.site.commons.pojo.Page;
 
 @Repository
 @Transactional
@@ -98,6 +98,20 @@ public abstract class AbstractDAOImpl<E, K> implements AbstractDAO<E, K> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		cq.select(cb.count(cq.from(type)));
 		return em.createQuery(cq).getSingleResult();
+	}
+	
+	public List<E> findPaginatedItems(Page page){
+		
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<E> criteria = cb.createQuery(type);
+		Root<E> root = criteria.from(type);
+		criteria.select(root);
+		
+		TypedQuery<E> query = page.createQuery(em, criteria, root);
+		List<E> items =  query.getResultList();
+		
+		
+		return items;
 	}
 	
 	

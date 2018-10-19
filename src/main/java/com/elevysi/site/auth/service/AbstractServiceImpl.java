@@ -4,9 +4,12 @@ package com.elevysi.site.auth.service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.elevysi.site.auth.dao.AbstractDAO;
+import com.elevysi.site.auth.entity.Role;
+import com.elevysi.site.commons.pojo.Page;
 
 
 @Service
@@ -35,6 +38,11 @@ public abstract class AbstractServiceImpl<E, K> extends BasicService implements 
 	}
 	public List<E> findAll(){
 		return abstractDAO.findAll();
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<E> findPaginatedItems(Page page){
+		return abstractDAO.findPaginatedItems(page);
 	}
 
 }

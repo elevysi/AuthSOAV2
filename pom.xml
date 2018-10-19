@@ -65,6 +65,7 @@
 		 <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <scope>provided</scope>
         </dependency>
         
 		<dependency>
@@ -221,17 +222,22 @@
 		        <groupId>com.spotify</groupId>
 		        <artifactId>docker-maven-plugin</artifactId>
 		        <version>0.4.10</version>
+		        
 		        <configuration>
 		          <imageName>${docker.image.name}:${docker.image.tag}</imageName>
 		          <dockerDirectory>${basedir}/target/dockerfile</dockerDirectory>
+		           <forceTags>true</forceTags>
+		           
 		          <resources>
 		            <resource>
 		              <targetPath>/</targetPath>
 		              <directory>${project.build.directory}</directory>
-		              <include>${project.build.finalName}.jar</include>
+		              <include>${project.build.finalName}.war</include>
+		              
 		            </resource>
 		          </resources>
 		        </configuration>
+		      
 		      </plugin>
 		
 			<plugin>

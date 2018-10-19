@@ -19,10 +19,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.elevysi.site.auth.entity.OauthClientDetail;
+import com.elevysi.site.auth.entity.OauthClientDetail_;
 import com.elevysi.site.auth.entity.Role;
 import com.elevysi.site.auth.entity.Role_;
 import com.elevysi.site.auth.entity.User;
 import com.elevysi.site.auth.entity.User_;
+import com.elevysi.site.auth.service.OauthClientDetailService;
 import com.elevysi.site.auth.service.RoleService;
 import com.elevysi.site.auth.service.UserService;
 import com.elevysi.site.commons.pojo.OffsetPage;
@@ -36,11 +39,13 @@ public class AjaxApiAdminController extends AbstractController{
 	
 	private UserService userService;
 	private RoleService roleService;
+	private OauthClientDetailService oauthClientDetailService;
 	
 	@Autowired
-	public AjaxApiAdminController(UserService userService, RoleService roleService) {
+	public AjaxApiAdminController(UserService userService, RoleService roleService, OauthClientDetailService oauthClientDetailService) {
 		this.userService = userService;
 		this.roleService = roleService;
+		this.oauthClientDetailService = oauthClientDetailService;
 	}
 	
 	@InitBinder
@@ -214,6 +219,75 @@ public class AjaxApiAdminController extends AbstractController{
 		}
 		
 		return returnValue;
+	}
+	
+	//OauthClients
+	
+	
+	@RequestMapping(value = {"/oauthClientDetail"}, method = RequestMethod.GET)
+	public String oauthClientDetails(Model model, @RequestParam(value="page", defaultValue="1", required=false)int pageIndex){
+		
+		OffsetPage page = oauthClientDetailService.buildOffsetPage(pageIndex, NUMBER_ITEMS_PER_PAGE, OauthClientDetail_.client_id, SortDirection.DESC);
+		List<OauthClientDetail> oauthClients = oauthClientDetailService.findPaginatedItems(page);
+		
+		long totalRecords = page.getTotalRecords();
+		int totalPages = Math.round(totalRecords / NUMBER_ITEMS_PER_PAGE);
+		model.addAttribute("page", page);
+		model.addAttribute("oauthClients", oauthClients);
+		model.addAttribute("totalPages", totalPages);
+		
+		return "indexOauthClientAjax";
+	}
+	
+	@RequestMapping(value="/oauthClientDetail/modalEdit/{id}")
+	public String editOauthClient(@PathVariable("id")Integer id, Model model){
+		
+		OauthClientDetail oauthClientDetail = oauthClientDetailService.findByID(id);
+		model.addAttribute("oauthClientDetail", oauthClientDetail);
+		return "modalOauthClientDetailEdit";
+	}
+	
+	@RequestMapping(value = {"/oauthClientDetail/modalEdit/{id}"}, method = RequestMethod.POST)
+	public @ResponseBody ReturnValue doOauthClientEditAjax(
+			@ModelAttribute("oauthClientDetail") OauthClientDetail oauthClientDetail, 
+			BindingResult result
+	){
+		
+		ReturnValue returnValue = new ReturnValue();
+		returnValue.setCode(0);
+		returnValue.setMessage("Failed to edit this client");
+		
+		if(! result.hasErrors()){
+			
+			OauthClientDetail updatedClient = oauthClientDetailService.updateClientDetailsAdmin(oauthClientDetail);
+			if(updatedClient != null){
+				returnValue.setCode(1);
+				returnValue.setMessage("Successfully updated client!");
+			}
+		}
+		
+		return returnValue;
+	}
+	
+	@RequestMapping(value = {"/oauthClientDetail/modalDelete/{clientID}"}, method = RequestMethod.DELETE)
+	public @ResponseBody ReturnValue doClientDeleteAjax(@PathVariable(value="clientID", required=true)Integer id){
+		
+		oauthClientDetailService.delete(id);
+		ReturnValue returnValue = new ReturnValue();
+		returnValue.setCode(1);
+		returnValue.setMessage("The client was successfully deleted!");
+		
+		return returnValue;
+	}
+	
+	@RequestMapping(value="/oauthClientDetail/modalView/{id}")
+	public String viewOauthClient(@PathVariable("id")Integer id, Model model){
+		
+		OauthClientDetail oauthClientDetail = oauthClientDetailService.findByID(id);
+		
+		model.addAttribute("client", oauthClientDetail);
+		
+		return "modalOauthClientDetailView";
 	}
 	
 

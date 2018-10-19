@@ -71,7 +71,7 @@
   <put-attribute name="body" value="/WEB-INF/views/jsp/admin/dashboard.jsp"/>
 </definition>
 
-<definition name="adminUpdatePassword" extends="commonBlog1.9">
+<definition name="adminUserUpdatePassword" extends="commonBlog1.9">
   <put-attribute name="title" value="Password Update" cascade="true"/>
   <put-attribute name="body" value="/WEB-INF/views/jsp/users/adminUpdatePassword.jsp" cascade="true"/>
 </definition>
@@ -104,5 +104,16 @@
   <put-attribute name="body" value="/WEB-INF/views/jsp/roles/add.jsp" />
 </definition>
 
+<!-- Oauth Clients -->
+
+<definition name="oauthClientDetailAdd" extends="commonBlog1.9">
+  <put-attribute name="title" value="Add new Oauth Client" />
+  <put-attribute name="body" value="/WEB-INF/views/jsp/oauthClientDetails/add.jsp" />
+</definition>
+
+<definition name="adminOauthClientSecretUpdate" extends="commonBlog1.9">
+  <put-attribute name="title" value="Password Update" cascade="true"/>
+  <put-attribute name="body" value="/WEB-INF/views/jsp/oauthClientDetails/adminUpdateSecret.jsp" cascade="true"/>
+</definition>
   
 </tiles-definitions>

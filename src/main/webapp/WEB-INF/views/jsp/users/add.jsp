@@ -4,6 +4,9 @@
 <%@ include file="../../layout/taglib.jsp"%>
 <c:url var ="tinymceCss" value='/css/tinymce.css'/>
 
+<c:url var="emailCheckUrl" value="/ui/ajax/user/emailRegistered" />
+<c:url var="usernameCheckUrl" value="/ui/ajax/user/usernameAvailable" />
+
 <div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
 	<form:form commandName="user" class="reg-page registrationForm">
 		<div class="reg-header">
@@ -166,23 +169,32 @@
 				$(".registrationForm").validate(
 						{
 							rules : {
-								username : {
+								username:{
 									required : true,
 									minlength : 3,
-								/* remote : {
-									url : "<spring:url value='/register/available.html'/>",
-									type : "GET",
-									data : {
-										username: function(){
-											return $("#name").val();
+									remote : {
+										url : "${usernameCheckUrl}",
+										type : "GET",
+										data : {
+											username: function(){
+												return $("#username").val();
+											}
 										}
 									}
-								} */
 								},
-								email : {
+								email: {
 									required : true,
-									email : true
-								},
+									email : true,
+									remote : {
+										url : "${emailCheckUrl}",
+										type : "GET",
+										data : {
+											email: function(){
+												return $("#email").val();
+											}
+										}
+									}
+								}
 								password : {
 									required : true,
 									minlength : 5

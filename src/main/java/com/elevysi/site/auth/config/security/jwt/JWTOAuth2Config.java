@@ -199,12 +199,12 @@ public class JWTOAuth2Config extends AuthorizationServerConfigurerAdapter{
 		
 	}
 	
-//	@Override
-//    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-//        security.passwordEncoder(passwordEncoder);
-//        security.allowFormAuthenticationForClients();
-////        security.checkTokenAccess("permitAll");
-//    }
+	@Override
+    public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+        security.passwordEncoder(passwordEncoder);
+        security.allowFormAuthenticationForClients();
+//        security.checkTokenAccess("permitAll");
+    }
 	
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception{
@@ -213,8 +213,8 @@ public class JWTOAuth2Config extends AuthorizationServerConfigurerAdapter{
 		 * https://stackoverflow.com/questions/29696004/skip-oauth-user-approval-in-spring-boot-oauth2
 		 * 
 		 */
-//		clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
-		clients.jdbc(dataSource);
+		clients.jdbc(dataSource).passwordEncoder(passwordEncoder);
+//		clients.jdbc(dataSource);
 	}
 	
 	
